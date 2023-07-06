@@ -377,6 +377,241 @@ public void ApplicationDbContextContainsDbSetBookingProperty()
     Assert.AreEqual(typeof(DbSet<Commuter>), propertyInfo.PropertyType);
 }
 }
+
+        [Test]
+        public void Commuter_Properties_CommuterID_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Commuter commuter = new Commuter();
+           
+            Assert.That(commuter.CommuterID, Is.TypeOf<int>());
+        }
+
+         [Test]
+        public void Commuter_Properties_Name_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Commuter commuter = new Commuter();
+            commuter.Name= "";
+           
+            Assert.That(commuter.Name, Is.TypeOf<string>());
+        }
+
+         [Test]
+        public void Commuter_Properties_Email_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Commuter commuter = new Commuter();
+            commuter.Email = "";
+           
+            Assert.That(commuter.Email, Is.TypeOf<string>());
+        }
+
+         [Test]
+        public void Commuter_Properties_Phone_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Commuter commuter = new Commuter();
+            commuter.Phone = "";
+           
+            Assert.That(commuter.Phone, Is.TypeOf<string>());
+        }
+
+         [Test]
+        public void Commuter_Properties_RideID_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Commuter commuter = new Commuter();
+           
+            Assert.That(commuter.RideID, Is.TypeOf<int>());
+        }
+         [Test]
+        public void Ride_Properties_RideID_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Ride ride = new Ride();
+           
+            Assert.That(ride.RideID, Is.TypeOf<int>());
+        }
+
+        [Test]
+        public void Ride_Properties_DepartureLocation_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Ride ride = new Ride();
+            ride.DepartureLocation = "";
+           
+            Assert.That(ride.DepartureLocation, Is.TypeOf<string>());
+        }
+
+        [Test]
+        public void Ride_Properties_Destination_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Ride ride = new Ride();
+            ride.Destination = "";
+           
+            Assert.That(ride.Destination, Is.TypeOf<string>());
+        }
+
+        [Test]
+        public void Ride_Properties_DateTime_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Ride ride = new Ride();
+           
+            Assert.That(ride.DateTime, Is.TypeOf<DateTime>());
+        }
+
+        [Test]
+        public void Ride_Properties_MaximumCapacity_ReturnExpectedDataTypes()
+        {
+            // Arrange
+            Ride ride = new Ride();
+           
+            Assert.That(ride.MaximumCapacity, Is.TypeOf<int>());
+        }
+
+        [Test]
+        public void Commuter_Ride_ReturnsExpectedValue()
+        {
+            // Arrange
+            Ride expectedRide = new Ride { RideID = 2 };
+            Commuter commuter = new Commuter { Ride = expectedRide };
+
+            // Assert
+            Assert.AreEqual(expectedRide, commuter.Ride);
+        }
+
+        [Test]
+        public void Commuter_Properties_CommuterID_ReturnExpectedValues()
+        {
+            // Arrange
+            int expectedCommuterID = 1;
+
+            // Act
+            Commuter commuter = new Commuter
+            {
+                CommuterID = expectedCommuterID,
+            };
+
+            // Assert
+            Assert.AreEqual(expectedCommuterID, commuter.CommuterID);
+        }
+
+        [Test]
+        public void Commuter_Properties_Name_ReturnExpectedValues()
+        {
+            
+            string expectedName = "John Doe";
+
+            // Act
+            Commuter commuter = new Commuter
+            {
+                Name = expectedName,
+            };
+
+            // Assert
+            Assert.AreEqual(expectedName, commuter.Name);
+        }
+
+        [Test]
+        public void Commuter_Properties_Email_ReturnExpectedValues()
+        {
+            string expectedEmail = "john@example.com";
+
+            // Act
+            Commuter commuter = new Commuter
+            {
+                Email = expectedEmail,
+            };
+
+            Assert.AreEqual(expectedEmail, commuter.Email);
+        }
+
+        [Test]
+        public void Commuter_Properties_Phone_ReturnExpectedValues()
+        {
+            
+            string expectedPhone = "1234567890";
+
+            // Act
+            Commuter commuter = new Commuter
+            {
+                Phone = expectedPhone,
+            };
+
+            Assert.AreEqual(expectedPhone, commuter.Phone);
+        }
+
+        [Test]
+        public void Commuter_Properties_RideID_ReturnExpectedValues()
+        {
+            int expectedRideID = 2;
+
+            // Act
+            Commuter commuter = new Commuter
+            {
+                RideID = expectedRideID
+            };
+            Assert.AreEqual(expectedRideID, commuter.RideID);
+        }
+
+        [Test]
+public void test_case12()
+{
+    using (var dbContext = new RideSharingDbContext(_dbContextOptions))
+    {
+        // Arrange
+        var slotController = new SlotController(dbContext);
+        var commuter = new Commuter
+        {
+            Name = "John Doe",
+            Email = "johndoe@example.com",
+            Phone = "1234567890"
+        };
+
+        // Act
+        var ride = dbContext.Rides.FirstOrDefault(r => r.RideID == 1);
+        ride.Destination = ride.DepartureLocation; // Set the destination as the same as departure
+        dbContext.SaveChanges();
+
+        var result = slotController.JoinRide(1, commuter) as ViewResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsFalse(result.ViewData.ModelState.IsValid);
+        Assert.IsTrue(result.ViewData.ModelState.ContainsKey("Destination"));
+    }
+}
+
+[Test]
+public void test_case13()
+{
+    using (var dbContext = new RideSharingDbContext(_dbContextOptions))
+    {
+        // Arrange
+        var slotController = new SlotController(dbContext);
+        var commuter = new Commuter
+        {
+            Name = "John Doe",
+            Email = "johndoe@example.com",
+            Phone = "1234567890"
+        };
+
+        // Act
+        var ride = dbContext.Rides.FirstOrDefault(r => r.RideID == 1);
+        ride.MaximumCapacity = -5; // Set a negative value for MaximumCapacity
+        dbContext.SaveChanges();
+
+        var result = slotController.JoinRide(1, commuter) as ViewResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsFalse(result.ViewData.ModelState.IsValid);
+        Assert.IsTrue(result.ViewData.ModelState.ContainsKey("MaximumCapacity"));
+    }
+}
 }
 
 }
